@@ -14,8 +14,12 @@
         c. Get download speed and store it in a variable.
 """
 
+import speedtest
+from speedtest_get import get_speed
+
 def main():
-    pass
+    all_results = get_speed()
+    print(all_results)
 
 if __name__ == '__main__':
     main() 

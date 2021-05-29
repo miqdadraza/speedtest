@@ -14,12 +14,26 @@
         c. Get download speed and store it in a variable.
 """
 
-import speedtest
+#import speedtest
 from speedtest_get import get_speed
+import json
+from datetime import datetime
+
+# defining global variables:
+speed_res, isp_res, speed_time = get_speed()
+
+def save_speed_info():
+    speed_info = {speed_time.strftime("%d/%m/%Y %H:%M"): speed_res}
+    with open('speed_info_text', mode='a') as f:
+        f.write(json.dumps(speed_info) + "\n")
+
 
 def main():
-    all_results = get_speed()
-    print(all_results)
+    save_speed_info()
+    # print(speed_res)
+    # print(isp_res)
+    # print(speed_time)
+    
 
 if __name__ == '__main__':
     main() 

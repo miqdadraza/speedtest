@@ -40,22 +40,36 @@ def save_speed_info():
     if not os.path.isfile(fname): #checks if file exists
         a.append(speed_info)
         with open(fname, mode='w') as f:
-            f.write(json.dumps(a, indent=2)) # uses the list, appends to list and adds to json
+            f.write(json.dumps(a, indent=4)) # uses the list, appends to list and adds to json
     else: # otheriwse opens file, reads and loads json data into a variable, appends to feeds
         with open(fname) as feedsjson:
             feeds = json.load(feedsjson) # benefit here is that feeds is a list
 
         feeds.append(entry)
         with open(fname, mode='w') as f:
-            f.write(json.dumps(feeds, indent=2))
+            f.write(json.dumps(feeds, indent=4))
 
 def save_server_info():
     """
     saves server info with date/time as dict in a file
     """
     server_info = {'time': date_time_string, 'isp': isp_res}
-    with open('isp_info_txt', 'a') as f:
-        f.write(json.dumps(server_info) + "\n")
+    fname = 'server_info.json'
+    entry = server_info
+
+    a = [] # initializes a new list for json
+    
+    if not os.path.isfile(fname): #checks if file exists
+        a.append(server_info)
+        with open(fname, mode='w') as f:
+            f.write(json.dumps(a, indent=4)) # uses the list, appends to list and adds to json
+    else: # otheriwse opens file, reads and loads json data into a variable, appends to feeds
+        with open(fname) as feedsjson:
+            feeds = json.load(feedsjson) # benefit here is that feeds is a list
+
+        feeds.append(entry)
+        with open(fname, mode='w') as f:
+            f.write(json.dumps(feeds, indent=4))
 
 # def graph_speeds():
 #     speed_info_df = pd.read_json(path_or_buf='speed_info_text.json', lines=True)

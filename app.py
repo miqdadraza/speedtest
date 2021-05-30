@@ -32,20 +32,39 @@ def save_speed_info():
     """
     speed_info = {'time':date_time_string, 'speeds': speed_res}
     
-    with open('speed_info.json', 'a+') as f: #initializing file if it doesn't exist
-        f.write("")
+    # with open('speed_info.json', 'a+') as f: #initializing file if it doesn't exist
+    #     f.write("")
     
-    if os.stat('speed_info.json').st_size == 0:
-        print('empty') #checking if file is empty
-        with open('speed_info.json', 'a+') as f:
-            json.dump(speed_info, f)
+    a = []
+    fname = 'speed_info.json'
+    entry = speed_info
+    if not os.path.isfile(fname):
+        a.append(speed_info)
+        with open(fname, mode='w') as f:
+            f.write(json.dumps(a, indent=2))
     else:
-        with open('speed_info.json') as f:
-            data = json.load(f)
-        data.update(speed_info)
-        print(data)
-        with open('speed_info.json', 'a+') as f:
-            json.dump(data, f)
+        with open(fname) as feedsjson:
+            feeds = json.load(feedsjson)
+
+        feeds.append(entry)
+        with open(fname, mode='w') as f:
+            f.write(json.dumps(feeds, indent=2))
+
+
+
+    # if os.stat('speed_info.json').st_size == 0:
+    #     print('empty') #checking if file is empty
+    #     with open('speed_info.json', 'a+') as f:
+    #         json.dump(speed_info, f)
+    # else:
+    #     with open('speed_info.json') as f:
+    #         data = json.load(f)
+    #     data.update(speed_info)
+    #     print(data)
+    #     with open('speed_info.json', 'a+') as f:
+    #         json.dump(data, f)
+
+
 
     #with open('speed_info.json')
     
@@ -64,7 +83,6 @@ def save_speed_info():
 
 # with open('test.json', 'w') as f:
 #     json.dump(data, f)
-
 
 
 def save_server_info():

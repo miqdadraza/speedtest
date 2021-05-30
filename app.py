@@ -18,18 +18,72 @@
 from speedtest_get import get_speed
 import json
 from datetime import datetime
+import pandas as pd
+import pandas_bokeh as pb
+import os
 
 # defining global variables:
 speed_res, isp_res, speed_time = get_speed()
+date_time_string = speed_time.strftime("%d/%m/%Y %H:%M")
 
 def save_speed_info():
-    speed_info = {speed_time.strftime("%d/%m/%Y %H:%M"): speed_res}
-    with open('speed_info_text', mode='a') as f:
-        f.write(json.dumps(speed_info) + "\n")
+    """
+    saves speed info with date/time as dict in a file
+    """
+    speed_info = {'time':date_time_string, 'speeds': speed_res}
+    
+    with open('speed_info.json', 'a+') as f: #initializing file if it doesn't exist
+        f.write("")
+    
+    if os.stat('speed_info.json').st_size == 0:
+        print('empty') #checking if file is empty
+        with open('speed_info.json', 'a+') as f:
+            json.dump(speed_info, f)
+    else:
+        with open('speed_info.json') as f:
+            data = json.load(f)
+        data.update(speed_info)
+        print(data)
+        with open('speed_info.json', 'a+') as f:
+            json.dump(data, f)
 
+    #with open('speed_info.json')
+    
+    # with open('speed_info_text.json', mode='a') as f:
+    #     json.dump(speed_info, f, indent=4)
+    #     # f.write("\n")
+
+# import json
+
+# a_dict = {'new_key': 'new_value'}
+
+# with open('test.json') as f:
+#     data = json.load(f)
+
+# data.update(a_dict)
+
+# with open('test.json', 'w') as f:
+#     json.dump(data, f)
+
+
+
+def save_server_info():
+    """
+    saves server info with date/time as dict in a file
+    """
+    server_info = {'time': date_time_string, 'isp': isp_res}
+    with open('isp_info_txt', 'a') as f:
+        f.write(json.dumps(server_info) + "\n")
+
+# def graph_speeds():
+#     speed_info_df = pd.read_json(path_or_buf='speed_info_text.json', lines=True)
+#     return speed_info_df
 
 def main():
     save_speed_info()
+    save_server_info()
+
+    # print(graph_speeds())
     # print(speed_res)
     # print(isp_res)
     # print(speed_time)

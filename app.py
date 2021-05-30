@@ -32,58 +32,22 @@ def save_speed_info():
     """
     speed_info = {'time':date_time_string, 'speeds': speed_res}
     
-    # with open('speed_info.json', 'a+') as f: #initializing file if it doesn't exist
-    #     f.write("")
-    
-    a = []
+    # solution from https://stackoverflow.com/a/35830107
+    a = [] # initializes a new list for json
     fname = 'speed_info.json'
     entry = speed_info
-    if not os.path.isfile(fname):
+
+    if not os.path.isfile(fname): #checks if file exists
         a.append(speed_info)
         with open(fname, mode='w') as f:
-            f.write(json.dumps(a, indent=2))
-    else:
+            f.write(json.dumps(a, indent=2)) # uses the list, appends to list and adds to json
+    else: # otheriwse opens file, reads and loads json data into a variable, appends to feeds
         with open(fname) as feedsjson:
-            feeds = json.load(feedsjson)
+            feeds = json.load(feedsjson) # benefit here is that feeds is a list
 
         feeds.append(entry)
         with open(fname, mode='w') as f:
             f.write(json.dumps(feeds, indent=2))
-
-
-
-    # if os.stat('speed_info.json').st_size == 0:
-    #     print('empty') #checking if file is empty
-    #     with open('speed_info.json', 'a+') as f:
-    #         json.dump(speed_info, f)
-    # else:
-    #     with open('speed_info.json') as f:
-    #         data = json.load(f)
-    #     data.update(speed_info)
-    #     print(data)
-    #     with open('speed_info.json', 'a+') as f:
-    #         json.dump(data, f)
-
-
-
-    #with open('speed_info.json')
-    
-    # with open('speed_info_text.json', mode='a') as f:
-    #     json.dump(speed_info, f, indent=4)
-    #     # f.write("\n")
-
-# import json
-
-# a_dict = {'new_key': 'new_value'}
-
-# with open('test.json') as f:
-#     data = json.load(f)
-
-# data.update(a_dict)
-
-# with open('test.json', 'w') as f:
-#     json.dump(data, f)
-
 
 def save_server_info():
     """

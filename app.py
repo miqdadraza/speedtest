@@ -22,7 +22,7 @@ import pandas as pd
 import pandas_bokeh
 import os
 
-pandas_bokeh.output_file("Interactive Plot.html")
+pandas_bokeh.output_file("InteractivePlot.html")
 
 # defining global variables:
 speed_res, isp_res, speed_time = get_speed()
@@ -96,7 +96,7 @@ def graph_speed(speed_df):
     alpha=0.6,
     vertical_xlabel=True,
     show_figure = False,
-    return_html = False)
+    return_html = True)
     return df_plot_bar
 
     # df_plot_line = df.plot_bokeh.line(
@@ -114,11 +114,34 @@ def graph_speed(speed_df):
 #     speed_info_df = pd.read_json(path_or_buf='speed_info_text.json', lines=True)
 #     return speed_info_df
 
+def generate_html():
+    pass
+
+
 def main():
     save_speed_info()
     save_server_info()
     df = speed_df()
-    graph_speed(df)
+    graphed_speed = graph_speed(df)
+    a = r"""<html>
+    <body>
+        <h1>The following is information about your speed:</h1>
+        <body>
+            <p align="center"><strong>Your current speeds are:</strong>
+                
+                <br>
+            <p align="center"><strong>A graphical representation of the last 10 speed points is below:</strong></p>
+            {}
+            
+                
+                
+            </p>
+    </body>
+</html>
+    """.format(graphed_speed)
+    with open('emailing_test.html', 'w') as f:
+        f.write(a)
+
     
 
 

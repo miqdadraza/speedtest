@@ -19,8 +19,10 @@ from speedtest_get import get_speed
 import json
 from datetime import datetime
 import pandas as pd
-import pandas_bokeh as pb
+import pandas_bokeh
 import os
+
+pandas_bokeh.output_file("Interactive Plot.html")
 
 # defining global variables:
 speed_res, isp_res, speed_time = get_speed()
@@ -80,8 +82,36 @@ def speed_df():
     with open('speed_info.json', 'r') as f:
         data = json.loads(f.read())
     speed_df = pd.json_normalize(data)
+    speed_df["time"] = pd.to_datetime(speed_df["time"])
     return speed_df
 
+def graph_speed(speed_df):
+    df = pd.DataFrame(speed_df).set_index("time").tail(10)
+    df.rename(columns={'time': 'Time', 'speeds.download': 'Download Speed', 'speeds.upload': 'Upload Speed'}, inplace=True)
+    df_plot_bar = df.plot_bokeh.line(
+    x_axis_type='datetime',
+    figsize=(800, 800),
+    ylabel="Speed [Mb/s]", 
+    xlabel="Date/Time",
+    title="Download/Upload Speeds by Time", 
+    alpha=0.6,
+    vertical_xlabel=False,
+    show_figure = False,
+    return_html = False)
+
+    # df_plot_line = df.plot_bokeh(kind='line', show_figure = True)
+
+    # df_plot_line = df.plot_bokeh.line(
+    # title="Download vs Upload",
+    # xlabel="Date/Time",
+    # ylabel="Speed [Mb/s]",
+    # alpha=0.6,
+    # vertical_xlabel=True,
+    # show_figure=False)
+
+    pandas_bokeh.plot_grid([[df_plot_bar]])
+
+    
 # def graph_speeds():
 #     speed_info_df = pd.read_json(path_or_buf='speed_info_text.json', lines=True)
 #     return speed_info_df
@@ -89,6 +119,9 @@ def speed_df():
 def main():
     save_speed_info()
     save_server_info()
+    df = speed_df()
+    graph_speed(df)
+
 
     # print(graph_speeds())
     # print(speed_res)

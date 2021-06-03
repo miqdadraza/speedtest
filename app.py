@@ -88,18 +88,16 @@ def speed_df():
 def graph_speed(speed_df):
     df = pd.DataFrame(speed_df).set_index("time").tail(10)
     df.rename(columns={'time': 'Time', 'speeds.download': 'Download Speed', 'speeds.upload': 'Upload Speed'}, inplace=True)
-    df_plot_bar = df.plot_bokeh.line(
-    x_axis_type='datetime',
+    df_plot_bar = df.plot_bokeh.bar(
     figsize=(800, 800),
     ylabel="Speed [Mb/s]", 
     xlabel="Date/Time",
     title="Download/Upload Speeds by Time", 
     alpha=0.6,
-    vertical_xlabel=False,
+    vertical_xlabel=True,
     show_figure = False,
     return_html = False)
-
-    # df_plot_line = df.plot_bokeh(kind='line', show_figure = True)
+    return df_plot_bar
 
     # df_plot_line = df.plot_bokeh.line(
     # title="Download vs Upload",
@@ -109,8 +107,8 @@ def graph_speed(speed_df):
     # vertical_xlabel=True,
     # show_figure=False)
 
-    pandas_bokeh.plot_grid([[df_plot_bar]])
-
+    # pandas_bokeh.plot_grid([[df_plot_bar]])
+    
     
 # def graph_speeds():
 #     speed_info_df = pd.read_json(path_or_buf='speed_info_text.json', lines=True)
@@ -121,7 +119,10 @@ def main():
     save_server_info()
     df = speed_df()
     graph_speed(df)
+    
 
+
+    
 
     # print(graph_speeds())
     # print(speed_res)

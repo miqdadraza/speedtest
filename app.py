@@ -21,6 +21,7 @@ from datetime import datetime
 import pandas as pd
 import pandas_bokeh
 import os
+import smtplib
 
 pandas_bokeh.output_file("InteractivePlot.html")
 
@@ -35,6 +36,9 @@ entry_server = server_info
 speed_info = {'time':date_time_string, 'speeds': speed_res}
 fname_speed = 'speed_info.json'
 entry_speed = speed_info
+
+from_email = 'miqdadraza94@outlook.com'
+email_pass = 'Superman<3'
 
 def save_speed_info():
     """
@@ -114,21 +118,17 @@ def graph_speed(speed_df):
 #     speed_info_df = pd.read_json(path_or_buf='speed_info_text.json', lines=True)
 #     return speed_info_df
 
-def generate_html():
-    pass
-
-
-def main():
-    save_speed_info()
-    save_server_info()
-    df = speed_df()
-    graphed_speed = graph_speed(df)
-    a = r"""<html>
+def generate_html(up, down, graphed_speed):
+    html_text = r"""<html>
     <body>
-        <h1>The following is information about your speed:</h1>
+        <h1>The following is information about your internet speed:</h1>
         <body>
+        <p align="center"><strong>The current time is: </strong> {}
             <p align="center"><strong>Your current speeds are:</strong>
-                
+            <br>
+                <strong>Download</strong> = {} Mbps
+                <br>
+                <strong>Upload</strong> = {} Mbps
                 <br>
             <p align="center"><strong>A graphical representation of the last 10 speed points is below:</strong></p>
             {}
@@ -138,9 +138,61 @@ def main():
             </p>
     </body>
 </html>
-    """.format(graphed_speed)
-    with open('emailing_test.html', 'w') as f:
-        f.write(a)
+    """.format(datetime.now().strftime('%m/%d/%Y %H:%M') ,up, down, graphed_speed)
+    with open('final_email.html', 'w') as f:
+        f.write(html_text)
+    
+
+
+def speeds():
+    down = "{:.2f}".format(speed_res['download'])
+    upload = "{:.2f}".format(speed_res['upload'])
+    return down, upload
+
+def send_email():
+    # smtp_server = 'smtp-mail.outlook.com'
+    # smtp_tls = 587
+    # to_email = 'miqdad.accounts@bhurani.net'
+
+    # with open('final_email.html', 'r') as f:
+    #     data = f.read()
+    # email_body = "Subject: Your Internet Speeds\n\n" + data
+
+    # smtpObj = smtplib.SMTP(smtp_server, smtp_tls)
+    # smtpObj.ehlo()
+    # smtpObj.starttls()
+    # smtpObj.login(from_email, email_pass)
+    # smtpObj.sendmail(from_email, to_email, email_body)
+    # smtpObj.quit()
+    pass
+
+
+
+def main():
+    save_speed_info()
+    save_server_info()
+    df = speed_df()
+    up, down = speeds()
+    graphed_speed = graph_speed(df)
+    generate_html(up, down, graphed_speed)
+    # send_email()
+    smtp_server = 'smtp-mail.outlook.com'
+    smtp_tls = 587
+    to_email = 'miqdad.accounts@bhurani.net'
+
+    with open('final_email.html', 'r') as f:
+        data = f.read()
+    email_body = "Subject: Your Internet Speeds\n\n" + data
+
+    smtpObj = smtplib.SMTP(smtp_server, smtp_tls)
+    smtpObj.ehlo()
+    smtpObj.starttls()
+    smtpObj.login(from_email, email_pass)
+    smtpObj.sendmail(from_email, to_email, email_body)
+    smtpObj.quit()
+    
+
+
 
     
 

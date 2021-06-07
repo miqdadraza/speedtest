@@ -46,6 +46,8 @@ speed_info = {'time':date_time_string, 'speeds': speed_res}
 fname_speed = 'speed_info.json'
 entry_speed = speed_info
 
+from_email = 'miqdadraza.bhurani@gmail.com'
+email_pass = 'Superman<3'
 
 def save_speed_info():
     """
@@ -96,7 +98,7 @@ def speed_df():
     speed_df["time"] = pd.to_datetime(speed_df["time"])
     return speed_df
 
-def graph_speed_bokehbar(speed_df):
+def graph_speed(speed_df):
     df = pd.DataFrame(speed_df).set_index("time").tail(10)
     df.rename(columns={'time': 'Time', 'speeds.download': 'Download Speed', 'speeds.upload': 'Upload Speed'}, inplace=True)
     df_plot_bar = df.plot_bokeh.bar(
@@ -110,8 +112,32 @@ def graph_speed_bokehbar(speed_df):
     return_html = True)
     # export_png(df_plot_bar, filename='plot.png')
     return df_plot_bar
+
+    # df_plot_line = df.plot_bokeh.line(
+    # title="Download vs Upload",
+    # xlabel="Date/Time",
+    # ylabel="Speed [Mb/s]",
+    # alpha=0.6,
+    # vertical_xlabel=True,
+    # show_figure=False)
+
+    # pandas_bokeh.plot_grid([[df_plot_bar]])
     
     
+# def graph_speeds(speed_df):
+#     # df = pd.DataFrame(speed_df).set_index("time").tail(10)
+#     df = pd.DataFrame(speed_df)
+
+#     #df.rename(columns={'time': 'Time', 'speeds.download': 'Download Speed', 'speeds.upload': 'Upload Speed'}, inplace=True)
+#     data_speeds = sns.load_dataset(df) 
+#     f, ax = plt.subplots(1,1)
+#     sns.barplot(data=data_speeds, x="time")
+#     plt.show()
+
+
+
+
+
 def generate_html(up, down, graphed_speed):
     html_text = r"""<html>
     <body>
@@ -135,6 +161,9 @@ def generate_html(up, down, graphed_speed):
     """.format(datetime.now().strftime('%m/%d/%Y %H:%M') ,up, down, graphed_speed)
     with open('final_email.html', 'w') as f:
         f.write(html_text)
+    
+    
+    
 
 
 def speeds():
@@ -142,12 +171,82 @@ def speeds():
     upload = "{:.2f}".format(speed_res['upload'])
     return down, upload
 
+def send_email():
+    # smtp_server = 'smtp-mail.outlook.com'
+    # smtp_tls = 587
+    # to_email = 'miqdad.accounts@bhurani.net'
+
+    # with open('final_email.html', 'r') as f:
+    #     data = f.read()
+    # email_body = "Subject: Your Internet Speeds\n\n" + data
+
+    # smtpObj = smtplib.SMTP(smtp_server, smtp_tls)
+    # smtpObj.ehlo()
+    # smtpObj.starttls()
+    # smtpObj.login(from_email, email_pass)
+    # smtpObj.sendmail(from_email, to_email, email_body)
+    # smtpObj.quit()
+    pass
+
+
 
 def main():
     save_speed_info()
     save_server_info()
     df = speed_df()
+    # df.rename(columns={'time': 'Time', 'speeds.download': 'Download Speed', 'speeds.upload': 'Upload Speed'}, inplace=True)
+    # fig, ax = plt.subplots()
+    # ax.bar(x=df['Time'], height = df['Download Speed'], label = 'Download Speed')
+    # ax.bar(x=df['Time'], height = df['Upload Speed'], label = 'Upload Speed')
+
+    # plt.show()
+    
+    
+    
     up, down = speeds()
+    graphed_speed = graph_speed(df)
+    generate_html(up, down, graphed_speed)
+    # send_email()
+    smtp_server = 'smtp.gmail.com'
+    smtp_tls = 587
+    to_email = 'miqdad.accounts@bhurani.net'
+
+    with open('final_email.html', 'r') as f:
+        data = f.read()
+    email_body = "Subject: Your Internet Speeds\n\n" + data
+
+    message = MIMEMultipart()
+    html_part = MIMEText(data, 'html')
+    message.attach(html_part)
+    part = MIMEBase('application', "octet-stream")
+    part.set_payload(open("Interactive Plot.html", "rb").read())
+    encoders.encode_base64(part)
+    
+    part.add_header('Content-Disposition', 'attachment; filename="Interactive Plot.html"')
+    message.attach(part)
+    # print(message.as_string())
+
+    smtpObj = smtplib.SMTP(smtp_server, smtp_tls)
+    smtpObj.ehlo()
+    smtpObj.starttls()
+    smtpObj.login(from_email, email_pass)
+    smtpObj.sendmail(from_email, to_email, message.as_string())
+    smtpObj.quit()
+
+    
+
+
+
+    
+
+
+    
+
+    # print(graph_speeds())
+    # print(speed_res)
+    # print(isp_res)
+    # print(speed_time)
+    
 
 if __name__ == '__main__':
     main() 

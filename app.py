@@ -36,6 +36,9 @@ import matplotlib.dates as mdates
 from bokeh.plotting import figure, output_file, show
 from bokeh.models import DatetimeTickFormatter
 from getpass import getpass
+from twilio.rest import Client
+import time
+
 
 from_email = 'miqdadraza.bhurani@gmail.com'
 # email_pass = 'Superman<3'
@@ -189,15 +192,36 @@ def servers_email():
         servers_email_str+= str(i) + " --> " + str(server_info['isp'][i]) + "</br>"
     return servers_email_str
 
+def send_sms(down, up):
+    body = "The current time is: " + datetime.now().strftime('%m/%d/%Y %H:%M') + "\n" + "Your Download Speed is: " + str(down) + " Mbps.\n" + "Your Upload Speed is: " + str(up) + " Mbps.\n"
+    # the following line needs your Twilio Account SID and Auth Token
+    client = Client("AC2699f92b34a1c856f1f7dd0c9f4d02ad", "c5ebd819d84f87f7931535d0fff42090")
+
+# change the "from_" number to your Twilio number and the "to" number
+# to the phone number you signed up for Twilio with, or upgrade your
+# account to send SMS to any phone number
+    with open("numbers.txt") as f:
+        numbers = f.readlines()
+    num_list = [x.strip() for x in numbers]
+    client.messages.create(to=numbers[0], 
+                       from_=numbers[1], 
+                       body=body)
+
+
 def main():
-    save_speed_info()
-    save_server_info()
-    df = speed_df()
-    up, down = speeds()
-    graph_mpl(df.tail(10))
-    servers_email_ = servers_email() 
-    generate_html(up, down, servers_email_)
-    email_to()
+    while True:
+        save_speed_info()
+        save_server_info()
+        df = speed_df()
+        up, down = speeds()
+        graph_mpl(df.tail(10))
+        servers_email_ = servers_email() 
+        generate_html(up, down, servers_email_)
+        email_to()
+        send_sms(up, down)
+        time.sleep(900)
+
+    
    
 
 if __name__ == '__main__':
